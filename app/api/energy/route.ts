@@ -53,8 +53,10 @@ export async function GET() {
       nextRegen = (energy === MAX_ENERGY)
         ? null
         : (lastUpdate + (regenCount + 1) * REGEN_INTERVAL);
-    } else {
+    } else if (energy >= MAX_ENERGY) {
+      // Enerji zaten maksimumda ise güncelleme yapma, sadece mevcut değeri döndür
       nextRegen = null;
+      // lastEnergyUpdate'i güncelleme - bu zamanlama karışıklığını önler
     }
 
     return NextResponse.json({ energy, nextRegen });

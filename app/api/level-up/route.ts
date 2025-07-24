@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Item seviyesini artırır
 
+const MAX_ENERGY = 100;
+const REGEN_INTERVAL = 30 * 1000; // 30 seconds in ms
+
 export async function POST(req: NextRequest) {
   try {
     const { cardId } = await req.json();
@@ -30,7 +33,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Item not found or progress not 100' }, { status: 400 });
     }
     
-    return NextResponse.json({ level: result.level, progress: 0 });
+    // nextRegen hesapla
+    const now = Date.now();
+    let nextRegen = null;
+    
+    if (user.energy < MAX_ENERGY) {
+      const lastUpdate = user.lastEnergyUpdate || now;
+      nextRegen = lastUpdate + REGEN_INTERVAL;
+    }
+    
+    return NextResponse.json({ level: result.level, progress: 0, energy: user.energy, nextRegen });
   } catch (error) {
     console.error('Level-up API error:', error);
     return NextResponse.json(

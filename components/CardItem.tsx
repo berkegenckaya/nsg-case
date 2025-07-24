@@ -125,7 +125,7 @@ const CardItem: React.FC<CardItemProps> = ({
                 onClick={() => !isMaxLevel && onUpgrade(id)}
                 disabled={isMaxLevel || !canUpgrade}
                 className={[
-                  "flex-1 px-4 py-1 rounded-full text-sm font-bold transition-all duration-200",
+                  "flex-1 px-4 py-1 cursor-pointer rounded-full text-sm font-bold transition-all duration-200",
                   isMaxLevel
                     ? "text-white/40 bg-white/5 cursor-not-allowed"
                     : canUpgrade

@@ -9,6 +9,7 @@ import { z } from "zod";
 const MAX_PROGRESS = 100;
 const COST_PER_CLICK = 1;
 const PER_CLICK = 2;
+const REGEN_INTERVAL = 30 * 1000; // 30 seconds in ms
 
 const Body = z.object({
   cardId: z.string().min(1),
@@ -105,6 +106,7 @@ export async function POST(req: NextRequest) {
         energy: newEnergy,
         progressGain,
         energySpent,
+        nextRegen: newEnergy < MAX_PROGRESS ? (user.lastEnergyUpdate || Date.now()) + REGEN_INTERVAL : null,
       };
     });
 
