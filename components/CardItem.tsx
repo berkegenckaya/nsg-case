@@ -103,9 +103,9 @@ const CardItem: React.FC<CardItemProps> = ({
 
           <div className="flex items-center gap-3">
             {canDevelop ? (
-              <div className="flex  justify-center items-center w-full gap-3">
+              <div className="flex flex-col md:flex-row justify-center items-center w-full gap-2 md:gap-3">
                 <DevelopButton
-                  className="flex-1"
+                  className="w-full md:flex-1"
                   cost={energyCost}
                   iconSrc={energyIconSrc}
                   disabled={false}
@@ -113,7 +113,7 @@ const CardItem: React.FC<CardItemProps> = ({
                 />
                 {/* Bar dolana kadar geliştir */}
                 <button
-                  className="inline-flex cursor-pointer text-black hover:brightness-110 active:brightness-95 items-center justify-center gap-2 rounded-full px-4 py-1 text-sm font-bold transition-all duration-150 bg-[#FFC980]"
+                  className="inline-flex w-full md:w-auto cursor-pointer text-black hover:brightness-110 active:brightness-95 items-center justify-center gap-2 rounded-full px-4 py-1 text-sm font-bold transition-all duration-150 bg-[#FFC980]"
                   style={INNER_SHADOW}
                   onClick={() => onDevelopMax?.(id)}
                 >
