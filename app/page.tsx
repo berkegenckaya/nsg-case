@@ -118,7 +118,7 @@ const HomePage: React.FC = () => {
 
   const handleDevelop = async (id: string) => {
     if (effEnergy === 0) {
-      setToast({ message: "Enerji yetersiz. Lütfen bekleyin veya enerjiyi yenileyin.", type: 'error' });
+      setToast({ message: "Enerji yetersiz. Lütfen bekleyin ve enerjiyi yenilensin.", type: 'error' });
       return;
     }
     const res = await fetch("/api/progress", {
@@ -134,7 +134,7 @@ const HomePage: React.FC = () => {
 
   const handleDevelopMax = async (id: string) => {
     if (effEnergy === 0) {
-      setToast({ message: "Enerji yetersiz. Lütfen bekleyin veya enerjiyi yenileyin.", type: 'error' });
+      setToast({ message: "Enerji yetersiz. Lütfen bekleyin ve enerjiyi yenilensin.", type: 'error' });
       return;
     }
     const res = await fetch("/api/progress-max", {
