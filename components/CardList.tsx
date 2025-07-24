@@ -26,6 +26,7 @@ interface CardListProps {
   onUpgrade: (id: string) => void;
   onDevelop?: (id: string) => void;
   onDevelopMax?: (id: string) => void;
+  isLoading?: boolean;
 }
 
 const clamp = (n: number, min: number, max: number) =>
@@ -40,7 +41,7 @@ function resolveLevelMeta(card: CardData): CardLevelMeta {
   );
 }
 
-const CardList: React.FC<CardListProps> = ({ cards, onUpgrade, onDevelop, onDevelopMax }) => {
+const CardList: React.FC<CardListProps> = ({ cards, onUpgrade, onDevelop, onDevelopMax, isLoading = false }) => {
   if (!cards?.length)
     return (
       <div className="w-full text-center text-white/60 py-10">
@@ -70,6 +71,7 @@ const CardList: React.FC<CardListProps> = ({ cards, onUpgrade, onDevelop, onDeve
             onUpgrade={onUpgrade}
             onDevelop={onDevelop}
             onDevelopMax={onDevelopMax}
+            isLoading={isLoading}
           />
         );
       })}

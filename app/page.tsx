@@ -27,6 +27,7 @@ const HomePage: React.FC = () => {
   const [cards, setCards] = useState<CardData[]>(buildInitialCards());
   const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const effEnergy = useMemo(() => clampEnergy(energy), [energy]);
 
@@ -117,47 +118,80 @@ const HomePage: React.FC = () => {
   }, [cards, activeTab]);
 
   const handleDevelop = async (id: string) => {
+    if (isLoading) return; // Race condition önleme
     if (effEnergy === 0) {
       setToast({ message: "Enerji yetersiz. Lütfen bekleyin veya enerjiyi yenileyin.", type: 'error' });
       return;
     }
-    const res = await fetch("/api/progress", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cardId: id }),
-    });
-    const data = await res.json();
-    setEnergy(clampEnergy(data.energy ?? 0));
-    setNextRegen(data.nextRegen ?? null);
-    await fetchUserItems();
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardId: id }),
+      });
+      const data = await res.json();
+      // Önce user items'ı güncelle
+      await fetchUserItems();
+      // Sonra energy state'ini güncelle
+      setEnergy(clampEnergy(data.energy ?? 0));
+      setNextRegen(data.nextRegen ?? null);
+    } catch (error) {
+      console.error("Develop error:", error);
+      setToast({ message: "İşlem başarısız oldu. Lütfen tekrar deneyin.", type: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDevelopMax = async (id: string) => {
+    if (isLoading) return; // Race condition önleme
     if (effEnergy === 0) {
       setToast({ message: "Enerji yetersiz. Lütfen bekleyin veya enerjiyi yenileyin.", type: 'error' });
       return;
     }
-    const res = await fetch("/api/progress-max", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cardId: id }),
-    });
-    const data = await res.json();
-    setEnergy(clampEnergy(data.energy ?? 0));
-    setNextRegen(data.nextRegen ?? null);
-    await fetchUserItems();
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/progress-max", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardId: id }),
+      });
+      const data = await res.json();
+      // Önce user items'ı güncelle
+      await fetchUserItems();
+      // Sonra energy state'ini güncelle
+      setEnergy(clampEnergy(data.energy ?? 0));
+      setNextRegen(data.nextRegen ?? null);
+    } catch (error) {
+      console.error("DevelopMax error:", error);
+      setToast({ message: "İşlem başarısız oldu. Lütfen tekrar deneyin.", type: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleUpgrade = async (id: string) => {
-    const res = await fetch("/api/level-up", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cardId: id }),
-    });
-    const data = await res.json();
-    setEnergy(clampEnergy(data.energy ?? 0));
-    setNextRegen(data.nextRegen ?? null);
-    await fetchUserItems();
+    if (isLoading) return; // Race condition önleme
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/level-up", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardId: id }),
+      });
+      const data = await res.json();
+      // Önce user items'ı güncelle
+      await fetchUserItems();
+      // Sonra energy state'ini güncelle
+      setEnergy(clampEnergy(data.energy ?? 0));
+      setNextRegen(data.nextRegen ?? null);
+    } catch (error) {
+      console.error("Upgrade error:", error);
+      setToast({ message: "İşlem başarısız oldu. Lütfen tekrar deneyin.", type: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleReset = async () => {
@@ -201,6 +235,7 @@ const HomePage: React.FC = () => {
           onUpgrade={handleUpgrade}
           onDevelop={handleDevelop}
           onDevelopMax={handleDevelopMax}
+          isLoading={isLoading}
         />
       </div>
       {/* Toast Notification */}

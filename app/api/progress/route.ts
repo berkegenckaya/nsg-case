@@ -35,13 +35,11 @@ export async function POST(req: NextRequest) {
       throw new ErrorWithStatus("Item not found", 404);
     }
     
-    const nextRegen = user.energy < MAX_ENERGY ? (user.lastEnergyUpdate || Date.now()) + REGEN_INTERVAL : null;
-    
     if (userItem.progress >= 100) {
       responsePayload = {
         progress: userItem.progress,
         energy: Math.min(user.energy, MAX_ENERGY),
-        nextRegen,
+        nextRegen: user.energy < MAX_ENERGY ? (user.lastEnergyUpdate || Date.now()) + REGEN_INTERVAL : null,
       };
       return;
     }
@@ -50,7 +48,7 @@ export async function POST(req: NextRequest) {
       responsePayload = {
         progress: userItem.progress,
         energy: Math.min(user.energy, MAX_ENERGY),
-        nextRegen,
+        nextRegen: user.energy < MAX_ENERGY ? (user.lastEnergyUpdate || Date.now()) + REGEN_INTERVAL : null,
       };
       return;
     }
@@ -66,7 +64,7 @@ export async function POST(req: NextRequest) {
       responsePayload = {
         progress: userItem.progress,
         energy: Math.min(user.energy, MAX_ENERGY),
-        nextRegen,
+        nextRegen: user.energy < MAX_ENERGY ? (user.lastEnergyUpdate || Date.now()) + REGEN_INTERVAL : null,
       };
       return;
     }

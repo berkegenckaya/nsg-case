@@ -22,6 +22,7 @@ export interface CardItemProps {
   onDevelopMax?: (id: string) => void; // Bar dolana kadar geliştir
   isMax: boolean;
   energyIconSrc?: string;
+  isLoading?: boolean;
 }
 
 const LEVEL_BORDER: Record<number, string> = {
@@ -57,6 +58,7 @@ const CardItem: React.FC<CardItemProps> = ({
   onDevelopMax,
   isMax,
   energyIconSrc = "/energy.png",
+  isLoading = false,
 }) => {
   const pct = clamp(Math.round(progress), 0, 100);
   const isMaxLevel = isMax || level >= maxLevel;
@@ -108,22 +110,27 @@ const CardItem: React.FC<CardItemProps> = ({
                   className="w-full md:flex-1"
                   cost={energyCost}
                   iconSrc={energyIconSrc}
-                  disabled={false}
+                  disabled={isLoading}
                   onClick={() => onDevelop?.(id)}
                 />
                 {/* Bar dolana kadar geliştir */}
                 <button
-                  className="inline-flex w-full md:w-auto cursor-pointer text-black hover:brightness-110 active:brightness-95 items-center justify-center gap-2 rounded-full px-4 py-1 text-sm font-bold transition-all duration-150 bg-[#FFC980]"
+                  className={`inline-flex w-full md:w-auto items-center justify-center gap-2 rounded-full px-4 py-1 text-sm font-bold transition-all duration-150 bg-[#FFC980] ${
+                    isLoading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "cursor-pointer hover:brightness-110 active:brightness-95"
+                  }`}
                   style={INNER_SHADOW}
-                  onClick={() => onDevelopMax?.(id)}
+                  onClick={() => !isLoading && onDevelopMax?.(id)}
+                  disabled={isLoading}
                 >
                   Max Geliştirme
                 </button>
               </div>
             ) : (
               <button
-                onClick={() => !isMaxLevel && onUpgrade(id)}
-                disabled={isMaxLevel || !canUpgrade}
+                onClick={() => !isMaxLevel && !isLoading && onUpgrade(id)}
+                disabled={isMaxLevel || !canUpgrade || isLoading}
                 className={[
                   "flex-1 px-4 py-1 cursor-pointer rounded-full text-sm font-bold transition-all duration-200",
                   isMaxLevel

@@ -10,6 +10,7 @@ const MAX_PROGRESS = 100;
 const COST_PER_CLICK = 1;
 const PER_CLICK = 2;
 const REGEN_INTERVAL = 30 * 1000; // 30 seconds in ms
+const MAX_ENERGY = 100;
 
 const Body = z.object({
   cardId: z.string().min(1),
@@ -40,7 +41,7 @@ export async function POST(req: NextRequest) {
       // Projection ile sadece gereken alanları çekiyoruz
       const user = await db
         .collection("users")
-        .findOne({ username }, { projection: { _id: 1, energy: 1 } });
+        .findOne({ username }, { projection: { _id: 1, energy: 1, lastEnergyUpdate: 1 } });
 
       if (!user)
         throw new ErrorWithStatus("User not found", 404);
@@ -73,9 +74,10 @@ export async function POST(req: NextRequest) {
       if (clicks === 0) {
         responsePayload = {
           progress: userItem.progress,
-          energy: user.energy,
+          energy: Math.min(user.energy, MAX_ENERGY),
           progressGain: 0,
           energySpent: 0,
+          nextRegen: user.energy < MAX_ENERGY ? (user.lastEnergyUpdate || Date.now()) + REGEN_INTERVAL : null,
         };
         return;
       }
@@ -103,10 +105,10 @@ export async function POST(req: NextRequest) {
 
       responsePayload = {
         progress: newProgress,
-        energy: newEnergy,
+        energy: Math.min(newEnergy, MAX_ENERGY),
         progressGain,
         energySpent,
-        nextRegen: newEnergy < MAX_PROGRESS ? (user.lastEnergyUpdate || Date.now()) + REGEN_INTERVAL : null,
+        nextRegen: newEnergy < MAX_ENERGY ? (user.lastEnergyUpdate || Date.now()) + REGEN_INTERVAL : null,
       };
     });
 
